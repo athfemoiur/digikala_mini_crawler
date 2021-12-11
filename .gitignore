@@ -1,0 +1,8 @@
+/.idea/*
+
+/src/.idea/*
+
+*.pyc
+
+/venv_digi
+

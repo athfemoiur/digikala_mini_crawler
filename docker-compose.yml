@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+
+  crawler:
+    build: .
+    container_name: 'crawler'
+    environment:
+      - "mongo_uri='mongodb://mongo:27017'"
+      - "db_name='digikala'"
+    depends_on:
+      - "mongo"
+      - "redis"
+
+  mongo:
+    image: 'mongo'
+    container_name: 'mongo'
+    restart: 'always'
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: 'redis:4-alpine'
+    container_name: 'redis'
+    ports:
+      - '6379:6379'
+
