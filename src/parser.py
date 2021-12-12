@@ -4,6 +4,10 @@ from bs4 import BeautifulSoup
 class Parser:
 
     def get_all_data(self, main_html_doc, ratings_html_doc):
+        """
+        retrieve all the data needed for one phone
+        by parsing their html-docs
+        """
         main_soup = BeautifulSoup(main_html_doc, 'html.parser')
         ratings_soup = BeautifulSoup(ratings_html_doc, 'html.parser')
         ratings_data = dict(

@@ -19,6 +19,9 @@ class DataCrawler:
         self.queue = self.create_queue()
 
     def create_queue(self):
+        """
+        put all the links in the queue for multithreading
+        """
         queue = Queue()
         for link in self.links:
             queue.put(link)
@@ -45,26 +48,31 @@ class DataCrawler:
 
     @staticmethod
     def get_product_id(url):
+        """
+        get the product_id(digikala) from the product url
+        """
         return re.search('[0-9]{7}', url).group()
 
     def crawl(self):
         while True:
             phone_link = self.queue.get()
             product_id = self.get_product_id(phone_link)
+            # async requests
             urls = [phone_link, RATING_BASE_URL.format(product_id)]
             rs = (grequests.get(u) for u in urls)
             responses = grequests.map(rs)
+            # put the link back in the queue if the response was
+            # anything but 200
             if not all(response.status_code == 200 for response in responses):
                 self.queue.put(phone_link)
             else:
                 html_docs = (response.text for response in responses)
-                self.store(phone_link, product_id, self.parser.get_all_data(*html_docs))
-            print('done')
+                self.store(product_id, phone_link, self.parser.get_all_data(*html_docs))
             self.queue.task_done()
             if self.queue.empty():
                 break
 
-    def store(self, link, product_id, data):
+    def store(self, product_id, link, data):
         total_data = {'product_id': product_id, 'url': link, **data}
         self.storage.insert_phones(total_data)
         self.storage.insert_phones_history(total_data)

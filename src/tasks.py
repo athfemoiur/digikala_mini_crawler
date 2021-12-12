@@ -1,6 +1,7 @@
 from celery import Celery
 from celery.schedules import crontab
 from crawler import DataCrawler
+from celery.exceptions import SoftTimeLimitExceeded
 
 app = Celery()
 app.conf.broker_url = 'redis://redis'
@@ -15,6 +16,8 @@ app.conf.beat_schedule = {
 
 @app.task()
 def crawl():
-    d = DataCrawler()
-    d.start()
-    return 'task done'
+    try:
+        DataCrawler().start()
+        return 'crawl task done'
+    except SoftTimeLimitExceeded:
+        return 'task failed, time limit exceeded'
