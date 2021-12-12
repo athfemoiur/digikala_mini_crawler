@@ -9,7 +9,7 @@ app.conf.broker_url = 'redis://redis'
 app.conf.beat_schedule = {
     'crawl_every_1_hour': {
         'task': 'tasks.crawl',
-        'schedule': crontab(minute='*/2')
+        'schedule': crontab(hour='*/1')
     }
 }
 
